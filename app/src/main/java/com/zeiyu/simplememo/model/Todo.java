@@ -9,42 +9,78 @@ import java.util.Date;
  */
 public class Todo {
 
-    private String title;
-    private Long timeStamp;
-
-    public Todo() {}
+    public Todo() {
+        alive = true;
+        Long t = System.currentTimeMillis();
+        setTimeStamp(t);
+    }
 
     public Todo(String title) {
 
         this.title = title;
-
-        Long tsLong = System.currentTimeMillis() ;
-        //Long tsLong = Calendar.getInstance().getTime() / 1000L;
-        //Long tsLong = Calendar.getInstance().getTime().getTimeInMillis()/1000L;
-
-        setTimeStamp(tsLong);
+        alive = true;
+        Long t = System.currentTimeMillis();
+        setTimeStamp(t);
     }
+
     public Todo(String title, Long timeStamp) {
         this.title = title;
-        this.timeStamp = timeStamp;
+        setTimeStamp(timeStamp);
     }
 
 
     public String getTitle() {
         return title;
     }
-
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public String getContent() {
+        return content;
+    }
+    public void setContent(String content) {
+        this.content = content;
     }
 
     public Long getTimeStamp() {
         return timeStamp;
     }
-
     public void setTimeStamp(Long timeStamp) {
+
         this.timeStamp = timeStamp;
+
+        Long r = timeStamp * -1 ;
+        setTimeStampReverse(r);
+
     }
 
+    public Long getTimeStampReverse() {
+        return timeStampReverse;
+    }
+    public void setTimeStampReverse(Long timeStampReverse) {
+        this.timeStampReverse = timeStampReverse;
+    }
+
+    public Boolean getAlive() {
+        return alive;
+    }
+    public void setAlive(Boolean alive) {
+        this.alive = alive;
+    }
+
+    public Boolean validation() {
+
+        if ( title.isEmpty()) return false;
+        if ( content.isEmpty() ) return false;
+
+        return true;
+    }
+
+    private String title;
+    private String content;
+    private Long timeStamp;
+    private Long timeStampReverse;
+    private Boolean alive;
 
 }

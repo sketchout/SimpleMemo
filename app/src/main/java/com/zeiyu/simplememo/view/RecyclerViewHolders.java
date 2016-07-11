@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.amulyakhare.textdrawable.TextDrawable;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -24,7 +25,7 @@ public class RecyclerViewHolders extends RecyclerView.ViewHolder{
 
     private static final String TAG = RecyclerViewHolders.class.getSimpleName();
 
-
+    public TextView content;
     public ImageView markIcon;
     public TextView title;
     public TextView dateStamp;
@@ -39,9 +40,11 @@ public class RecyclerViewHolders extends RecyclerView.ViewHolder{
         this.todoObject = todoObject;
 
         title = (TextView)itemView.findViewById(R.id.todo_title);
+        content = (TextView)itemView.findViewById(R.id.todo_content);
         dateStamp = (TextView)itemView.findViewById(R.id.todo_date);
         timeStamp = (TextView)itemView.findViewById(R.id.todo_time);
         markIcon = (ImageView)itemView.findViewById(R.id.todo_icon);
+
         deleteIcon =(ImageView)itemView.findViewById(R.id.todo_delete);
 
         deleteIcon.setOnClickListener(new View.OnClickListener(){
@@ -62,6 +65,7 @@ public class RecyclerViewHolders extends RecyclerView.ViewHolder{
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         for( DataSnapshot item : dataSnapshot.getChildren() ) {
                             item.getRef().removeValue();
+                            //item.getRef().setValue("alive",false);
                         }
                     }
 

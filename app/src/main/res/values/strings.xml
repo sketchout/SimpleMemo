@@ -4,7 +4,7 @@
 
     <!-- Strings related to main  -->
     <string name="button_add">Add</string>
-
+    <string name="image_icon">Icon</string>
     <!-- Strings related to login -->
     <string name="title_activity_login">Sign in</string>
 

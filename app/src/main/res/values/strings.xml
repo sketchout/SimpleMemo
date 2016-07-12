@@ -5,9 +5,14 @@
     <!-- Strings related to main  -->
     <string name="button_add">Add</string>
     <string name="image_icon">Icon</string>
-    <!-- Strings related to login -->
-    <string name="title_activity_login">Sign in</string>
 
+    <!-- Strings related to activity -->
+    <string name="title_activity_main">Todo</string>
+    <string name="title_activity_login">Sign-in</string>
+    <string name="title_activity_empty">Empty</string>
+    <string name="title_activity_edit">Edit</string>
+
+    <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password (optional)</string>
     <string name="action_sign_in">Sign in or register</string>
@@ -21,6 +26,10 @@
     </string>
 
     <!-- Strings related to alert message -->
+    <string name="login_notice_title">Notice</string>
+    <string name="login_notice_text">Already registerd! Please Login now.</string>
     <string name="empty_string_msg">You must enter a task first.</string>
     <string name="short_string_msg">Title length is at least 6 characters.</string>
+
+    <!-- Strings related to login -->
 </resources>

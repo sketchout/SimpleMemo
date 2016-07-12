@@ -4,8 +4,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -20,6 +20,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -35,6 +37,7 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG= MainActivity.class.getSimpleName();
+    static final int MAX_CHAT_MESSAGES_TO_SHOW = 500;
 
     private DatabaseReference dbr;
     private ArrayList<Todo> listTodo;
@@ -43,20 +46,42 @@ public class MainActivity extends AppCompatActivity {
     private Button addTaskButton;
     private LinearLayoutManager linearLayoutManager;
     private RecyclerViewAdapter recyclerViewAdatper;
+    private FirebaseAuth fAuth;
+    private FirebaseAuth.AuthStateListener fAuthListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         //
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        setInitialize();
+        
+        checkFirebaseAuth();
+        
+
+    }
+
+    private void checkFirebaseAuth() {
+        fAuth = FirebaseAuth.getInstance();
+        fAuthListener = new FirebaseAuth.AuthStateListener() {
+
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+
+                FirebaseUser fUser = fAuth.getCurrentUser();
+                if ( fUser != null ) {
+                    setInitialize();
+                } else {
+                    loadLoginActivity();
+                }
+            }
+        };
     }
 
     private void setInitialize() {
         enableListAdapter();
         enableAddButton();
         enableAddToolbar();
-        //enableAddFloating();
+        enableAddFloating();
         enableDbEventListen();
     }
 
@@ -68,6 +93,7 @@ public class MainActivity extends AppCompatActivity {
     }
     private void enableDbEventListen() {
         dbr = FirebaseDatabase.getInstance().getReference("todo");
+        dbr.limitToLast(MAX_CHAT_MESSAGES_TO_SHOW);
         dbr.orderByChild("timeStampReverse");
 
         dbr.addChildEventListener(new ChildEventListener() {
@@ -96,20 +122,21 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void enableAddFloating() {
-//        // floataction
-//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+        // floataction
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG )
 //                        .setAction("Action", null).show();
-//            }
-//        });
+                loadEmptyActivity();
+            }
+        });
     }
 
     private void enableAddToolbar() {
         // toolbar
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_main);
         setSupportActionBar(toolbar);
     }
 
@@ -132,7 +159,8 @@ public class MainActivity extends AppCompatActivity {
 
 //                    Toast.makeText(MainActivity.this,
 //                            R.string.short_string_msg,Toast.LENGTH_LONG).show();
-                    showMessageAlertOk(MainActivity.this,"Information", getString(R.string.short_string_msg) );
+                    showMessageAlertOk(MainActivity.this,"Information",
+                            getString(R.string.short_string_msg) );
                     return;
                 }
                 saveNewTodo(enteredTitle);
@@ -155,11 +183,46 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            Intent intent = new Intent(this, LoginActivity.class);
-            this.startActivity(intent);
+
+            loadEmptyActivity();
+
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void showLoginAlert() {
+        AlertDialog.Builder builder =
+                new AlertDialog.Builder(MainActivity.this);
+        builder.setMessage(R.string.login_notice_text)
+                .setTitle(R.string.login_notice_title)
+                .setPositiveButton(android.R.string.ok, null);
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    private void loadLoginActivity()
+    {
+        showLoginAlert();
+        Intent intent = new Intent(this, LoginActivity.class);
+        // New Task
+        intent.addFlags( Intent.FLAG_ACTIVITY_NEW_TASK );
+        intent.addFlags( Intent.FLAG_ACTIVITY_CLEAR_TASK );
+
+        this.startActivity(intent);
+    }
+
+    private void loadEmptyActivity()
+    {
+        Intent i = new Intent(this, EmptyActivity.class);
+        //i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        // clears the activity stack --
+        // This prevents the user going back to the main activity
+        // when they press the Back button from the login view
+        //i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+
+        this.startActivity(i);
     }
 
     private void saveNewTodo(String enteredTitle) {
@@ -266,5 +329,15 @@ public class MainActivity extends AppCompatActivity {
         dialog.show();
 
         return false;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
     }
 }

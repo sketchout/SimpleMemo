@@ -5,8 +5,8 @@ android {
     buildToolsVersion "24.0.0"
     defaultConfig {
         applicationId "com.zeiyu.simplememo"
-        minSdkVersion 16
-        targetSdkVersion 24
+        minSdkVersion 19
+        targetSdkVersion 23
         versionCode 1
         versionName "1.0"
     }
@@ -25,8 +25,27 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:24.0.0'
     compile 'com.android.support:design:24.0.0'
+    compile 'com.google.firebase:firebase-core:9.0.2'
+    // Analytics
+    compile 'com.google.firebase:firebase-auth:9.0.2'
+    // Authentication
     compile 'com.google.firebase:firebase-database:9.0.2'
+    // Realtime Database
     compile 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
+    //compile 'com.google.firebase:firebase-storage:9.2.0'
+    // Storage
+    ///compile 'com.google.firebase:firebase-crash:9.2.0'
+    // Crash Reporting
+    ///compile 'com.google.firebase:firebase-messaging:9.2.0'
+    // Cloud Messaging / Notifications
+    //compile 'com.google.firebase:firebase-config:9.2.0'
+    // Remote Config
+    ///compile 'com.google.firebase:firebase-invites:9.2.0'
+    // Invites / Dynamic Links
+    //compile 'com.google.firebase:firebase-ads:9.2.0'
+    // AdMob
+    //compile 'com.google.android.gms:play-services-appindexing:9.2.0'
+    //App Indexing
 }
 
 // Add to the bottom of the file

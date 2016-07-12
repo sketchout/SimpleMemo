@@ -6,7 +6,7 @@ android {
     defaultConfig {
         applicationId "com.zeiyu.simplememo"
         minSdkVersion 19
-        targetSdkVersion 23
+        targetSdkVersion 22
         versionCode 1
         versionName "1.0"
     }
@@ -15,6 +15,11 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+    packagingOptions {
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE-FIREBASE.txt'
+        exclude 'META-INF/NOTICE'
     }
     productFlavors {
     }
@@ -25,8 +30,7 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:24.0.0'
     compile 'com.android.support:design:24.0.0'
-    compile 'com.google.firebase:firebase-core:9.0.2'
-    // Analytics
+    //compile 'com.google.firebase:firebase-core:9.0.2'     // Analytics
     compile 'com.google.firebase:firebase-auth:9.0.2'
     // Authentication
     compile 'com.google.firebase:firebase-database:9.0.2'

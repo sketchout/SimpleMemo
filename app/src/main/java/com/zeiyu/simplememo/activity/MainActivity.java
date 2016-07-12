@@ -56,11 +56,17 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         
         checkFirebaseAuth();
-        
+
+        enableListAdapter();
+        enableAddButton();
+        enableAddToolbar();
+        enableAddFloating();
+
 
     }
 
     private void checkFirebaseAuth() {
+
         fAuth = FirebaseAuth.getInstance();
         fAuthListener = new FirebaseAuth.AuthStateListener() {
 
@@ -69,8 +75,10 @@ public class MainActivity extends AppCompatActivity {
 
                 FirebaseUser fUser = fAuth.getCurrentUser();
                 if ( fUser != null ) {
+                    Log.d(TAG, "onAuthStateChanged:uid() :" + fUser.getUid() );
                     setInitialize();
                 } else {
+                    Log.d(TAG, "onAuthStateChanged:signed_out");
                     loadLoginActivity();
                 }
             }
@@ -78,10 +86,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setInitialize() {
-        enableListAdapter();
-        enableAddButton();
-        enableAddToolbar();
-        enableAddFloating();
         enableDbEventListen();
     }
 

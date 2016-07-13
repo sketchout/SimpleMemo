@@ -37,24 +37,29 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG= MainActivity.class.getSimpleName();
-    static final int MAX_CHAT_MESSAGES_TO_SHOW = 500;
 
-    private DatabaseReference dbr;
-    private ArrayList<Todo> listTodo;
+    // add
     private EditText addTaskBox;
-    private RecyclerView recyclerView;
     private Button addTaskButton;
+    // view
+    private RecyclerView recyclerView;
+    private ArrayList<Todo> listTodo;
     private LinearLayoutManager linearLayoutManager;
     private RecyclerViewAdapter recyclerViewAdatper;
+    static final int MAX_CHAT_MESSAGES_TO_SHOW = 500;
+    // firebase
     private FirebaseAuth fAuth;
     private FirebaseAuth.AuthStateListener fAuthListener;
+    private DatabaseReference dbr;
 
+    // onCreate
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         //
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        
+
+        // http://yookn.tistory.com/244
         checkFirebaseAuth();
 
         enableListAdapter();
@@ -65,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    // checkFirebaseAuth
     private void checkFirebaseAuth() {
 
         fAuth = FirebaseAuth.getInstance();
@@ -85,16 +91,19 @@ public class MainActivity extends AppCompatActivity {
         };
     }
 
+    // setInitialize
     private void setInitialize() {
         enableDbEventListen();
     }
 
+    // enable
     private void enableListAdapter() {
         listTodo = new ArrayList<Todo>();
         recyclerView = (RecyclerView)findViewById(R.id.list_view);
         linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
     }
+    // enable
     private void enableDbEventListen() {
         dbr = FirebaseDatabase.getInstance().getReference("todo");
         dbr.limitToLast(MAX_CHAT_MESSAGES_TO_SHOW);
@@ -124,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
+    // enable
     private void enableAddFloating() {
         // floataction
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -138,12 +147,14 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    // enable
     private void enableAddToolbar() {
         // toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_main);
         setSupportActionBar(toolbar);
     }
 
+    // enable
     private void enableAddButton() {
         addTaskBox = (EditText)findViewById(R.id.add_task_box);
 
@@ -172,6 +183,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    // onCreate
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -179,6 +191,7 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+    // onOptions
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -195,6 +208,7 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    // show
     private void showLoginAlert() {
         AlertDialog.Builder builder =
                 new AlertDialog.Builder(MainActivity.this);
@@ -206,6 +220,7 @@ public class MainActivity extends AppCompatActivity {
         dialog.show();
     }
 
+    // load
     private void loadLoginActivity()
     {
         showLoginAlert();
@@ -217,6 +232,7 @@ public class MainActivity extends AppCompatActivity {
         this.startActivity(intent);
     }
 
+    // load
     private void loadEmptyActivity()
     {
         Intent i = new Intent(this, EmptyActivity.class);
@@ -229,6 +245,7 @@ public class MainActivity extends AppCompatActivity {
         this.startActivity(i);
     }
 
+    // save
     private void saveNewTodo(String enteredTitle) {
 
         Todo todo = new Todo( );
@@ -251,6 +268,7 @@ public class MainActivity extends AppCompatActivity {
         addTaskBox.setText(""); // clear
     }
 
+    // delete
     private void deleteTodo(DataSnapshot dataSnapshot) {
         for(DataSnapshot item : dataSnapshot.getChildren() ) {
             String key = item.getKey();
@@ -272,6 +290,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // get
     private void getListTodo(DataSnapshot dataSnapshot) {
 
         Long tsLong = null;
@@ -299,6 +318,7 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.scrollToPosition(recyclerViewAdatper.getItemCount()-1);
     }
 
+    // show
     private void showMessageAlertOk(Context context, String title, String message) {
         AlertDialog.Builder builder =
                 new AlertDialog.Builder(context);
@@ -310,6 +330,7 @@ public class MainActivity extends AppCompatActivity {
         AlertDialog dialog = builder.create();
         dialog.show();
     }
+    // show
     private boolean showMessageAlertYesNo(Context context, String title, String message) {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
@@ -335,11 +356,13 @@ public class MainActivity extends AppCompatActivity {
         return false;
     }
 
+    // on
     @Override
     protected void onResume() {
         super.onResume();
     }
 
+    // on
     @Override
     protected void onRestart() {
         super.onRestart();

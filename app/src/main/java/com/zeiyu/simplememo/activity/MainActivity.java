@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -51,6 +50,8 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth fAuth;
     private FirebaseAuth.AuthStateListener fAuthListener;
     private DatabaseReference dbr;
+    private FirebaseUser fUser;
+
 
     // onCreate
     @Override
@@ -58,41 +59,31 @@ public class MainActivity extends AppCompatActivity {
         //
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         // http://yookn.tistory.com/244
         checkFirebaseAuth();
-
-        enableListAdapter();
-        enableAddButton();
-        enableAddToolbar();
-        enableAddFloating();
-
-
+        //setInitialize();
     }
 
-    // checkFirebaseAuth
+    //FirebaseUser checkFirebaseAuth
     private void checkFirebaseAuth() {
 
-        fAuth = FirebaseAuth.getInstance();
-        fAuthListener = new FirebaseAuth.AuthStateListener() {
+        fUser = FirebaseAuth.getInstance().getCurrentUser();
+        if ( fUser != null ) {
+            Log.d(TAG, "onAuthStateChanged:uid() :" + fUser.getUid() );
+            setInitialize();
 
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-
-                FirebaseUser fUser = fAuth.getCurrentUser();
-                if ( fUser != null ) {
-                    Log.d(TAG, "onAuthStateChanged:uid() :" + fUser.getUid() );
-                    setInitialize();
-                } else {
-                    Log.d(TAG, "onAuthStateChanged:signed_out");
-                    loadLoginActivity();
-                }
-            }
-        };
+        } else {
+            Log.d(TAG, "onAuthStateChanged:signed_out");
+            loadLoginActivity();
+        }
     }
 
     // setInitialize
     private void setInitialize() {
+        enableListAdapter();
+        enableAddButton();
+        enableAddToolbar();
+        enableAddFloating();
         enableDbEventListen();
     }
 
@@ -223,8 +214,8 @@ public class MainActivity extends AppCompatActivity {
     // load
     private void loadLoginActivity()
     {
-        showLoginAlert();
-        Intent intent = new Intent(this, LoginActivity.class);
+        //showLoginAlert();
+        Intent intent = new Intent(this, DefaultLoginActivity.class);
         // New Task
         intent.addFlags( Intent.FLAG_ACTIVITY_NEW_TASK );
         intent.addFlags( Intent.FLAG_ACTIVITY_CLEAR_TASK );

@@ -1,12 +1,8 @@
 package com.zeiyu.simplememo.activity;
 
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -29,11 +25,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.zeiyu.simplememo.R;
 import com.zeiyu.simplememo.model.Todo;
 import com.zeiyu.simplememo.util.DateUtils;
-import com.zeiyu.simplememo.view.RecyclerViewAdapter;
+import com.zeiyu.simplememo.adapter.RecyclerViewAdapter;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
 
     private static final String TAG= MainActivity.class.getSimpleName();
 
@@ -60,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         // http://yookn.tistory.com/244
+
         checkFirebaseAuth();
         //setInitialize();
     }
@@ -67,7 +64,8 @@ public class MainActivity extends AppCompatActivity {
     //FirebaseUser checkFirebaseAuth
     private void checkFirebaseAuth() {
 
-        fUser = FirebaseAuth.getInstance().getCurrentUser();
+        //fUser = FirebaseAuth.getInstance().getCurrentUser();
+        fUser = getCurrentUser();
         if ( fUser != null ) {
             Log.d(TAG, "onAuthStateChanged:uid() :" + fUser.getUid() );
             setInitialize();
@@ -80,99 +78,17 @@ public class MainActivity extends AppCompatActivity {
 
     // setInitialize
     private void setInitialize() {
+
         enableListAdapter();
+
         enableAddButton();
         enableAddToolbar();
         enableAddFloating();
-        enableDbEventListen();
+
+        // listener
+        enableDbEventListener();
     }
 
-    // enable
-    private void enableListAdapter() {
-        listTodo = new ArrayList<Todo>();
-        recyclerView = (RecyclerView)findViewById(R.id.list_view);
-        linearLayoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(linearLayoutManager);
-    }
-    // enable
-    private void enableDbEventListen() {
-        dbr = FirebaseDatabase.getInstance().getReference("todo");
-        dbr.limitToLast(MAX_CHAT_MESSAGES_TO_SHOW);
-        dbr.orderByChild("timeStampReverse");
-
-        dbr.addChildEventListener(new ChildEventListener() {
-
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                getListTodo(dataSnapshot);
-            }
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                getListTodo(dataSnapshot);
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-                deleteTodo(dataSnapshot);
-            }
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-            }
-        });
-    }
-    // enable
-    private void enableAddFloating() {
-        // floataction
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG )
-//                        .setAction("Action", null).show();
-                loadEmptyActivity();
-            }
-        });
-    }
-
-    // enable
-    private void enableAddToolbar() {
-        // toolbar
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_main);
-        setSupportActionBar(toolbar);
-    }
-
-    // enable
-    private void enableAddButton() {
-        addTaskBox = (EditText)findViewById(R.id.add_task_box);
-
-        addTaskButton =(Button)findViewById(R.id.add_task_button);
-        addTaskButton.setOnClickListener(new View.OnClickListener(){
-
-            @Override
-            public void onClick(View view) {
-
-                final String enteredTitle = addTaskBox.getText().toString();
-                if (TextUtils.isEmpty( enteredTitle)) {
-                    Toast.makeText(MainActivity.this,
-                            R.string.empty_string_msg, Toast.LENGTH_LONG).show();
-                    return;
-                }
-                if ( enteredTitle.length() < 6 ) {
-
-//                    Toast.makeText(MainActivity.this,
-//                            R.string.short_string_msg,Toast.LENGTH_LONG).show();
-                    showMessageAlertOk(MainActivity.this,"Information",
-                            getString(R.string.short_string_msg) );
-                    return;
-                }
-                saveNewTodo(enteredTitle);
-            }
-        });
-    }
 
     // onCreate
     @Override
@@ -190,36 +106,39 @@ public class MainActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-
-            loadEmptyActivity();
-
-            return true;
+        switch ( id )
+        {
+            case R.id.action_settings:
+                return true;
+            case R.id.action_signout:
+                return true;
         }
+//        if (id == R.id.action_settings) {
+//            loadEmptyActivity();
+//            return true;
+//        }
         return super.onOptionsItemSelected(item);
     }
 
-    // show
-    private void showLoginAlert() {
-        AlertDialog.Builder builder =
-                new AlertDialog.Builder(MainActivity.this);
-        builder.setMessage(R.string.login_notice_text)
-                .setTitle(R.string.login_notice_title)
-                .setPositiveButton(android.R.string.ok, null);
+    // on
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
 
-        AlertDialog dialog = builder.create();
-        dialog.show();
+    // on
+    @Override
+    protected void onRestart() {
+        super.onRestart();
     }
 
     // load
     private void loadLoginActivity()
     {
-        //showLoginAlert();
-        Intent intent = new Intent(this, DefaultLoginActivity.class);
+        Intent intent = new Intent(this, LoginActivity.class);
         // New Task
-        intent.addFlags( Intent.FLAG_ACTIVITY_NEW_TASK );
-        intent.addFlags( Intent.FLAG_ACTIVITY_CLEAR_TASK );
-
+        //intent.addFlags( Intent.FLAG_ACTIVITY_NEW_TASK );
+        //intent.addFlags( Intent.FLAG_ACTIVITY_CLEAR_TASK );
         this.startActivity(intent);
     }
 
@@ -232,7 +151,6 @@ public class MainActivity extends AppCompatActivity {
         // This prevents the user going back to the main activity
         // when they press the Back button from the login view
         //i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-
         this.startActivity(i);
     }
 
@@ -240,11 +158,13 @@ public class MainActivity extends AppCompatActivity {
     private void saveNewTodo(String enteredTitle) {
 
         Todo todo = new Todo( );
+
         if( enteredTitle.length() > 12 ) {
             todo.setTitle( enteredTitle.substring(0,12)+"..." );
         } else {
             todo.setTitle( enteredTitle );
         }
+
         todo.setContent(enteredTitle);
         todo.setAlive(true);
 
@@ -253,6 +173,7 @@ public class MainActivity extends AppCompatActivity {
 
         if ( todo.validation() )
             dbr.push().setValue(todo);
+
         //dbr.push().child("todo").setValue(taskObject);
         //dbr.child("todo").child(userid).setValue(taskObject);
         //dbr.child("todo").setValue(taskObject);
@@ -309,53 +230,87 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.scrollToPosition(recyclerViewAdatper.getItemCount()-1);
     }
 
-    // show
-    private void showMessageAlertOk(Context context, String title, String message) {
-        AlertDialog.Builder builder =
-                new AlertDialog.Builder(context);
-        builder.setMessage(message)
-                .setTitle(title)
-                .setIcon(android.R.drawable.ic_dialog_alert)
-                .setPositiveButton(android.R.string.ok, null);
-
-        AlertDialog dialog = builder.create();
-        dialog.show();
+    // enable
+    private void enableListAdapter() {
+        listTodo = new ArrayList<Todo>();
+        recyclerView = (RecyclerView)findViewById(R.id.list_view);
+        linearLayoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(linearLayoutManager);
     }
-    // show
-    private boolean showMessageAlertYesNo(Context context, String title, String message) {
+    // enable
+    private void enableDbEventListener() {
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setMessage(message)
-                .setTitle(title)
-                .setIcon(android.R.drawable.ic_dialog_alert)
-                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-
-                    }
-                })
-                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-
-                    }
-                });
-
-        AlertDialog dialog = builder.create();
-        dialog.show();
-
-        return false;
+        dbr = FirebaseDatabase.getInstance().getReference("todo");
+        dbr.limitToLast(MAX_CHAT_MESSAGES_TO_SHOW);
+        dbr.orderByChild("timeStampReverse");
+        dbr.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                getListTodo(dataSnapshot);
+            }
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                getListTodo(dataSnapshot);
+            }
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                deleteTodo(dataSnapshot);
+            }
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+    }
+    // enable
+    private void enableAddFloating() {
+        // floataction
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG )
+//                        .setAction("Action", null).show();
+                loadEmptyActivity();
+            }
+        });
     }
 
-    // on
-    @Override
-    protected void onResume() {
-        super.onResume();
+    // enable
+    private void enableAddToolbar() {
+        // toolbar
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_main);
+        setSupportActionBar(toolbar);
     }
 
-    // on
-    @Override
-    protected void onRestart() {
-        super.onRestart();
+    // enable
+    private void enableAddButton() {
+        addTaskBox = (EditText)findViewById(R.id.add_task_box);
+
+        addTaskButton =(Button)findViewById(R.id.add_task_button);
+        addTaskButton.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View view) {
+
+            final String enteredTitle = addTaskBox.getText().toString();
+            if (TextUtils.isEmpty( enteredTitle)) {
+                Toast.makeText(MainActivity.this,
+                        R.string.empty_string_msg, Toast.LENGTH_LONG).show();
+                return;
+            }
+            if ( enteredTitle.length() < 6 ) {
+//                    Toast.makeText(MainActivity.this,
+//                            R.string.short_string_msg,Toast.LENGTH_LONG).show();
+                showAlert("Information", getString(R.string.short_string_msg));
+
+                return;
+            }
+            saveNewTodo(enteredTitle);
+            }
+        });
     }
+
 }

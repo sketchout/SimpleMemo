@@ -25,10 +25,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activity.DefaultLoginActivity"
-            android:label="@string/title_activity_login"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
             android:name=".activity.EmptyActivity"
             android:label="@string/title_activity_empty"
             android:theme="@style/AppTheme.NoActionBar">
@@ -36,8 +32,10 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.zeiyu.simplememo.activity.MainActivity" />
         </activity>
-        <activity android:name=".activity.LoginActivity" />
-        <activity android:name=".activity.SignupActivity"></activity>
+        <activity android:name=".activity.LoginActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity android:name=".activity.SignupActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
     </application>
 
 </manifest>

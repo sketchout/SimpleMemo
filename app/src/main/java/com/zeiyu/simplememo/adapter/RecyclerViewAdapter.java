@@ -1,7 +1,6 @@
-package com.zeiyu.simplememo.view;
+package com.zeiyu.simplememo.adapter;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,12 +13,12 @@ import com.zeiyu.simplememo.model.Todo;
 import com.zeiyu.simplememo.util.DateUtils;
 
 import java.util.List;
-import java.util.Random;
 
 /**
  * Created by ZeiYu on 7/6/2016.
  */
-public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewHolders> {
+public class RecyclerViewAdapter
+        extends RecyclerView.Adapter<RecyclerViewHolders> {
 
     private Context context;
     private List<Todo> todo;
@@ -32,8 +31,14 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewHolder
     @Override
     public RecyclerViewHolders onCreateViewHolder(ViewGroup parent, int viewType) {
 
+        // viewHolder
         RecyclerViewHolders viewHolder = null;
-        View layoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_todo,parent, false);
+
+        // view - item
+        View layoutView = LayoutInflater.from(
+                parent.getContext()).inflate(R.layout.item_todo,parent, false);
+
+        // viewHolder
         viewHolder = new RecyclerViewHolders(layoutView, todo);
 
         return viewHolder;
@@ -47,6 +52,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewHolder
 
         String timeString = DateUtils.timestampToTime( todo.get(position).getTimeStamp()  ) ;
         String dateString = DateUtils.timestampToDate( todo.get(position).getTimeStamp()  ) ;
+
         holder.timeStamp.setText( timeString  );
         holder.dateStamp.setText( dateString  );
 

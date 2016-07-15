@@ -6,7 +6,11 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.zeiyu.simplememo.R;
+
+import java.util.Map;
 
 /**
  * Created by admin on 2016-07-15.
@@ -15,6 +19,7 @@ public class BaseActivity extends AppCompatActivity {
 
     private ProgressDialog mProgressDialog;
 
+    // dialog
     public void showProgressDialog() {
         if (mProgressDialog == null) {
             mProgressDialog = new ProgressDialog(this, R.style.AppTheme_Dark_Dialog);
@@ -41,23 +46,36 @@ public class BaseActivity extends AppCompatActivity {
         }
     }
 
+    // auth
     public String getUid() {
         return FirebaseAuth.getInstance().getCurrentUser().getUid();
     }
-
     public FirebaseUser getCurrentUser() {
         return FirebaseAuth.getInstance().getCurrentUser();
     }
 
-    public void showAlert(String title,String message) {
+    // database
+    public DatabaseReference getReference() {
+        return FirebaseDatabase.getInstance().getReference();
+    }
 
+    public DatabaseReference getReferenceChild(String sChild) {
+        return FirebaseDatabase.getInstance().getReference(sChild);
+    }
+
+    public void saveKeyValue(String sChild, String sKey, Map<String,Object> sValue)
+    {
+        getReference().child(sChild).child(sKey).setValue(sValue);
+    }
+
+    // alert
+    public void showAlert(String title,String message) {
         // Authenticated failed with error firebaseError
         AlertDialog.Builder builder =
                 new AlertDialog.Builder(this);
         builder.setMessage( message )
                 .setTitle(title)
                 .setPositiveButton(android.R.string.ok, null);
-
         AlertDialog dialog = builder.create();
         dialog.show();
     }

@@ -11,10 +11,12 @@ import com.zeiyu.simplememo.R;
 
 public class EmptyActivity extends AppCompatActivity {
 
+    // http://www.parallelcodes.com/creating-a-notepad-application-in-android/
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_empty);
+
 
         setInitialize();
     }

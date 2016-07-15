@@ -45,7 +45,6 @@ public class MainActivity extends BaseActivity {
     // firebase
     private FirebaseAuth fAuth;
     private FirebaseAuth.AuthStateListener fAuthListener;
-    private DatabaseReference dbr;
     private FirebaseUser fUser;
 
 
@@ -171,8 +170,9 @@ public class MainActivity extends BaseActivity {
         String timeString = DateUtils.timestampToString( todo.getTimeStamp()  ) ;
         Log.d(TAG,"save time :" + timeString );
 
-        if ( todo.validation() )
+        if ( todo.validation() ) {
             dbr.push().setValue(todo);
+        }
 
         //dbr.push().child("todo").setValue(taskObject);
         //dbr.child("todo").child(userid).setValue(taskObject);
@@ -240,9 +240,12 @@ public class MainActivity extends BaseActivity {
     // enable
     private void enableDbEventListener() {
 
-        dbr = FirebaseDatabase.getInstance().getReference("todo");
+        //dbr = FirebaseDatabase.getInstance().getReference("todo");
+        dbr = getReferenceChild("todo");
+
         dbr.limitToLast(MAX_CHAT_MESSAGES_TO_SHOW);
         dbr.orderByChild("timeStampReverse");
+
         dbr.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {

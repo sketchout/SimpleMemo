@@ -1,86 +1,87 @@
 package com.zeiyu.simplememo.model;
 
-import java.sql.Timestamp;
-import java.util.Calendar;
-import java.util.Date;
-
 /**
  * Created by ZeiYu on 7/6/2016.
  */
 public class Todo {
 
     public Todo() {
-        alive = true;
+        todoAlive = true;
         Long t = System.currentTimeMillis();
-        setTimeStamp(t);
+        setTodoTimeStamp(t);
     }
 
     public Todo(String title) {
 
-        this.title = title;
-        alive = true;
+        this.todoSubject = title;
+        todoAlive = true;
         Long t = System.currentTimeMillis();
-        setTimeStamp(t);
+        setTodoTimeStamp(t);
     }
 
     public Todo(String title, Long timeStamp) {
-        this.title = title;
-        setTimeStamp(timeStamp);
+        this.todoSubject = title;
+        setTodoTimeStamp(timeStamp);
     }
 
 
-    public String getTitle() {
-        return title;
+    public String getTodoSubject() {
+        return todoSubject;
     }
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getContent() {
-        return content;
-    }
-    public void setContent(String content) {
-        this.content = content;
+    public void setTodoSubject(String todoSubject) {
+        this.todoSubject = todoSubject;
     }
 
-    public Long getTimeStamp() {
-        return timeStamp;
+    public String getTodoMemo() {
+        return todoMemo;
     }
-    public void setTimeStamp(Long timeStamp) {
-
-        this.timeStamp = timeStamp;
-
-        Long r = timeStamp * -1 ;
-        setTimeStampReverse(r);
-
+    public void setTodoMemo(String todoMemo) {
+        this.todoMemo = todoMemo;
     }
 
-    public Long getTimeStampReverse() {
-        return timeStampReverse;
+    public Long getTodoTimeStamp() {
+        return todoTimeStamp;
     }
-    public void setTimeStampReverse(Long timeStampReverse) {
-        this.timeStampReverse = timeStampReverse;
+    public void setTodoTimeStamp(Long todoTimeStamp) {
+        Long r =0L;
+        this.todoTimeStamp = todoTimeStamp;
+
+        try {
+            r = todoTimeStamp * -1 ;
+        } catch (Exception e ) {
+            // ToDo :
+            e.printStackTrace();
+        }
+        setTodoTimeStampReverse(r);
+
     }
 
-    public Boolean getAlive() {
-        return alive;
+    public Long getTodoTimeStampReverse() {
+        return todoTimeStampReverse;
     }
-    public void setAlive(Boolean alive) {
-        this.alive = alive;
+    public void setTodoTimeStampReverse(Long todoTimeStampReverse) {
+        this.todoTimeStampReverse = todoTimeStampReverse;
+    }
+
+    public Boolean getTodoAlive() {
+        return todoAlive;
+    }
+    public void setTodoAlive(Boolean todoAlive) {
+        this.todoAlive = todoAlive;
     }
 
     public Boolean validation() {
 
-        if ( title.isEmpty()) return false;
-        if ( content.isEmpty() ) return false;
+        if ( todoSubject.isEmpty()) return false;
+        if ( todoMemo.isEmpty() ) return false;
 
         return true;
     }
 
-    private String title;
-    private String content;
-    private Long timeStamp;
-    private Long timeStampReverse;
-    private Boolean alive;
+    private String todoSubject;
+    private String todoMemo;
+    private Long todoTimeStamp;
+    private Long todoTimeStampReverse;
+    private Boolean todoAlive;
 
 }

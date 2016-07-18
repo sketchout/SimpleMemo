@@ -8,7 +8,9 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.zeiyu.simplememo.R;
+import com.zeiyu.simplememo.model.Todo;
 
 import java.util.Map;
 
@@ -19,7 +21,7 @@ public class BaseActivity extends AppCompatActivity {
 
     private ProgressDialog mProgressDialog;
 
-    // dialog
+    // dialog progress
     public void showProgressDialog() {
         if (mProgressDialog == null) {
             mProgressDialog = new ProgressDialog(this, R.style.AppTheme_Dark_Dialog);
@@ -46,27 +48,48 @@ public class BaseActivity extends AppCompatActivity {
         }
     }
 
-    // auth
-    public String getUid() {
+    // firebase auth
+    public String getFireAuthUid() {
         return FirebaseAuth.getInstance().getCurrentUser().getUid();
     }
-    public FirebaseUser getCurrentUser() {
+    public FirebaseUser getFireAuthUser() {
         return FirebaseAuth.getInstance().getCurrentUser();
     }
+    public void setFireAuthSignout() {
+        FirebaseAuth.getInstance().signOut();
+    }
 
-    // database
-    public DatabaseReference getReference() {
+    // firebase database
+    public DatabaseReference getFireDbRef() {
         return FirebaseDatabase.getInstance().getReference();
     }
 
-    public DatabaseReference getReferenceChild(String sChild) {
+    public DatabaseReference getFireDbChild(String sChild) {
         return FirebaseDatabase.getInstance().getReference(sChild);
     }
 
-    public void saveKeyValue(String sChild, String sKey, Map<String,Object> sValue)
-    {
-        getReference().child(sChild).child(sKey).setValue(sValue);
+    public DatabaseReference getTodoReferenceChild() {
+        return FirebaseDatabase.getInstance().getReference(getTodoPath());
     }
+
+//    public void saveKeyValue(String sChild, String sKey, Map<String,Object> sValue)
+//    {
+//        getFireDbRef().child(sChild).child(sKey).setValue(sValue);
+//    }
+
+    public String getTodoPath() {
+        return  "/todo/" + getFireAuthUid() + "/";
+    }
+
+    public void saveTodo(Todo todo) {
+
+        getFireDbChild( getTodoPath() ).push().setValue(todo);
+    }
+
+//    public Query getQueryEqualTo(String sChild, String sValue) {
+//        //return getFireDbChild( getTodoPath()).orderByChild("todoSubject").equalTo(title);
+//        return getFireDbChild( getTodoPath()).orderByChild(sChild).equalTo(sValue);
+//    }
 
     // alert
     public void showAlert(String title,String message) {
@@ -80,29 +103,4 @@ public class BaseActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    // show
-//    private boolean showMessageAlertYesNo(Context context, String title, String message) {
-//
-//        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-//        builder.setMessage(message)
-//                .setTitle(title)
-//                .setIcon(android.R.drawable.ic_dialog_alert)
-//                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialogInterface, int i) {
-//
-//                    }
-//                })
-//                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialogInterface, int i) {
-//
-//                    }
-//                });
-//
-//        AlertDialog dialog = builder.create();
-//        dialog.show();
-//
-//        return false;
-//    }
 }

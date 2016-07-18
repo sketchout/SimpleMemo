@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/coordinator_edit"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:fitsSystemWindows="true"
     tools:context="com.zeiyu.simplememo.activity.EditActivity">
 
     <android.support.design.widget.AppBarLayout
@@ -20,51 +23,41 @@
 
     </android.support.design.widget.AppBarLayout>
 
+
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:weightSum="10">
+        android:layout_height="wrap_content"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:orientation="vertical">
 
-        <LinearLayout
+        <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:orientation="horizontal"
-            android:weightSum="2">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.5"
-                android:gravity="top|center"
-                android:id="@+id/show_"
-                android:text="Subject"/>
-
+            android:layout_height="wrap_content"
+            android:id="@+id/input_layout_subject"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp">
             <EditText
-                    android:layout_width="0dp"
-                    android:id="@+id/input_subject"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1.5"
-                    android:inputType="textAutoCorrect"
-                    android:hint="Subject here"
-                    android:gravity="top|center"/>
-        </LinearLayout>
-        <LinearLayout
+                android:id="@+id/input_subject"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textAutoCorrect"
+                android:hint="Subject"/>
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="9"
-            android:orientation="vertical"
-            android:weightSum="2">
+            android:layout_height="wrap_content"
+            android:id="@+id/input_playout_memo"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp">
             <EditText
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
+                android:layout_height="wrap_content"
                 android:id="@+id/input_memo"
-                android:hint="Your Memo here"
-                android:layout_weight="2"
-                android:gravity="top|left"
-                android:inputType="textMultiLine"/>
-        </LinearLayout>
-    </LinearLayout>
+                android:gravity="top"
+                android:inputType="textMultiLine"
+                android:hint="Memo"/>
+        </android.support.design.widget.TextInputLayout>
 
+    </LinearLayout>
 </android.support.design.widget.CoordinatorLayout>

@@ -9,17 +9,17 @@ import java.util.Locale;
 /**
  * Created by ZeiYu on 7/7/2016.
  */
-public class DateUtils {
+public class StrUtil {
 
 
     public static String timestampToString(Long timeStamp){
         try{
             DateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm");
-            //Date dt = new Date( timeStamp * 1000 );
+            //Date dt = new Date( timeTextView * 1000 );
             // return sdf.format(dt);
 
             //Calendar cal = Calendar.getInstance();
-            //cal.setTimeInMillis(timeStamp);
+            //cal.setTimeInMillis(timeTextView);
             Date netDate = new Date(timeStamp);
             return sdf.format(netDate);
 
@@ -31,11 +31,11 @@ public class DateUtils {
     public static String timestampToDate(Long timeStamp){
         try{
             DateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
-            //Date dt = new Date( timeStamp * 1000 );
+            //Date dt = new Date( timeTextView * 1000 );
             // return sdf.format(dt);
 
             //Calendar cal = Calendar.getInstance();
-            //cal.setTimeInMillis(timeStamp);
+            //cal.setTimeInMillis(timeTextView);
             Date netDate = new Date(timeStamp);
             return sdf.format(netDate);
 
@@ -47,11 +47,11 @@ public class DateUtils {
     public static String timestampToTime(Long timeStamp){
         try{
             DateFormat sdf = new SimpleDateFormat("HH:mm");
-            //Date dt = new Date( timeStamp * 1000 );
+            //Date dt = new Date( timeTextView * 1000 );
             // return sdf.format(dt);
 
             //Calendar cal = Calendar.getInstance();
-            //cal.setTimeInMillis(timeStamp);
+            //cal.setTimeInMillis(timeTextView);
             Date netDate = new Date(timeStamp);
             return sdf.format(netDate);
 

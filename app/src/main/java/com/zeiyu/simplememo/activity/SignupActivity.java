@@ -1,8 +1,8 @@
 package com.zeiyu.simplememo.activity;
 
 import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -43,7 +43,6 @@ public class SignupActivity extends BaseActivity {
 
     private void setInitialize() {
         ButterKnife.inject(this);
-
         _signupButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -51,12 +50,17 @@ public class SignupActivity extends BaseActivity {
             }
         });
 
+        String strText = getString(R.string.link_text_signin1)
+                + " <font color=blue>" + getString(R.string.link_text_signin2) +"</font>";
+        _loginLink.setText( Html.fromHtml(strText) );
+
         _loginLink.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 finish();
             }
         });
+
     }
 
     private void signup() {

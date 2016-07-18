@@ -7,6 +7,12 @@
     <string name="button_add">Add</string>
     <string name="image_icon">Icon</string>
 
+    <!--Text Link  -->
+    <string name="link_text_signin1">Already a member?</string>
+    <string name="link_text_signin2">Login</string>
+    <string name="link_text_signup1">No account yet?</string>
+    <string name="link_text_signup2">Create one</string>
+
     <!-- Strings related to activity -->
     <string name="title_activity_main">Todo</string>
     <string name="title_activity_login">Sign-in</string>
@@ -17,7 +23,9 @@
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
     <string name="action_sign_in">Sign in or register</string>
-    <string name="action_sign_in_short">Sign in</string>
+    <string name="action_sign_in_short">Sign-in</string>
+
+    <!-- Error -->
     <string name="error_invalid_email">This email address is invalid</string>
     <string name="error_invalid_password">This password is too short</string>
     <string name="error_incorrect_password">This password is incorrect</string>
@@ -32,5 +40,16 @@
     <string name="empty_string_msg">You must enter a task first.</string>
     <string name="short_string_msg">Title length is at least 6 characters.</string>
 
-    <!-- Strings related to login -->
+    <!-- Strings related to recycler delete -->
+    <string name="confirm_delete_title">Confirmation</string>
+    <string name="confirm_delete_message">Are you sure to delete?</string>
+    <string name="confirm_delete_cancel">Cancel</string>
+    <string name="confirm_delete_accept">Delete</string>
+
+    <!-- Strings related to recycler delete -->
+    <string name="confirm_signout_title">Confirmation</string>
+    <string name="confirm_signout_message">Are you sure to signout?</string>
+    <string name="confirm_signout_cancel">Cancel</string>
+    <string name="confirm_signout_accept">Signout</string>
+
 </resources>

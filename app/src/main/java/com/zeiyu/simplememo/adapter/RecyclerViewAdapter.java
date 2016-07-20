@@ -12,12 +12,11 @@ import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.zeiyu.simplememo.R;
 import com.zeiyu.simplememo.activity.MainActivity;
-import com.zeiyu.simplememo.model.Todo;
+import com.zeiyu.simplememo.model.Memo;
 import com.zeiyu.simplememo.util.StrUtil;
 
 import java.util.List;
@@ -26,15 +25,15 @@ import java.util.List;
  * Created by ZeiYu on 7/6/2016.
  */
 public class RecyclerViewAdapter
-        extends RecyclerView.Adapter<RecyclerViewHolders> {
+        extends RecyclerView.Adapter<RecyclerViewHolders> implements RecyclerViewHolders.Callback {
 
     private static final String TAG = RecyclerViewAdapter.class.getSimpleName();
 
     //private final OnItemTodoClickListner listener;
     private Context context;
-    private final List<Todo> todoList;
+    private final List<Memo> todoList;
 
-    public RecyclerViewAdapter(Context context, List<Todo> todoList
+    public RecyclerViewAdapter(Context context, List<Memo> todoList
                                 //,OnItemTodoClickListner listener
                                ) {
         this.context = context;
@@ -45,66 +44,79 @@ public class RecyclerViewAdapter
     @Override
     public RecyclerViewHolders onCreateViewHolder(ViewGroup parent, int viewType) {
 
-        // viewHolder
-        RecyclerViewHolders viewHolder = null;
-
         // view - item
         View layoutView = LayoutInflater.from(
-                parent.getContext()).inflate(R.layout.item_todo,parent, false);
+                parent.getContext()).inflate(R.layout.item_memo,parent, false);
+        // viewHolder, callback
+        RecyclerViewHolders viewHolder = new RecyclerViewHolders(layoutView, context, todoList,this);
+        return viewHolder;
+    }
 
-        // viewHolder
-        viewHolder = new RecyclerViewHolders(layoutView, context, todoList,
-                new RecyclerViewHolders.Callback() {
+    @Override
+    public void onDeleteProcess(int index) {
 
+        // Lod.d
+        String subject = todoList.get(index).getSubject();
+        Log.d(TAG,"deleteIcon - Memo subject:"+ subject);
+
+        // find
+        //DatabaseReference dbr = FirebaseDatabase.getInstance().getReference("todo");
+
+        DatabaseReference dbr = ((MainActivity)context).getTodoReferenceChild();
+
+        Query qry = dbr.orderByChild( Memo._child_key).equalTo(subject);
+        //Query qry = ((MainActivity)context).getQueryEqualTo(title);
+
+        qry.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDeleteProcess(int index) {
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for( DataSnapshot item : dataSnapshot.getChildren() ) {
 
-                String title = todoList.get(index).getTodoSubject();
-                // Lod.d
-                Log.d(TAG,"deleteIcon - Todo Title:"+ title);
-                // find
-                //DatabaseReference dbr = FirebaseDatabase.getInstance().getReference("todo");
+                    // removeValue()
+                    item.getRef().removeValue();
 
-                DatabaseReference dbr = ((MainActivity)context).getTodoReferenceChild();
-                Query qry = dbr.orderByChild("todoSubject").equalTo(title);
-                //Query qry = ((MainActivity)context).getQueryEqualTo(title);
+                    //item.getRef().setValue("alive",false);
 
-                qry.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        for( DataSnapshot item : dataSnapshot.getChildren() ) {
-                            item.getRef().removeValue();
-                            //item.getRef().setValue("alive",false);
-                        }
-                    }
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                        Log.e(TAG,"onCancelled", databaseError.toException() );
-                    }
-                });
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e(TAG,"onCancelled", databaseError.toException() );
             }
         });
-        return viewHolder;
+    }
+
+    @Override
+    public void onClickLinearLayout(int index) {
+
+        // Lod.d
+        String subject = todoList.get(index).getSubject();
+        String memo = todoList.get(index).getContent();
+        Long timeStamp = todoList.get(index).getTimeStamp();
+
+        Log.d(TAG,"click - Memo :"+ subject);
+        ((MainActivity)context).loadEditActivity(subject,memo);
     }
 
     @Override
     public void onBindViewHolder(RecyclerViewHolders holder, int position) {
 
         Log.d(TAG,"onBindViewHolder:" + position);
-        Log.d(TAG,"todoList.get(position).getTodoSubject():" + todoList.get(position).getTodoSubject());
+        Log.d(TAG,"todoList.get(position).getTodoSubject():"
+                + todoList.get(position).getSubject() );
         //holder.bind(todoList.get(position), listener );
 
-        holder.subjectTextView.setText( todoList.get(position).getTodoSubject() );
-        holder.memoTextView.setText( todoList.get(position).getTodoMemo());
+        holder.subjectTextView.setText( todoList.get(position).getSubject() );
+        holder.memoTextView.setText( todoList.get(position).getContent() );
 
-        String timeString = StrUtil.timestampToTime( todoList.get(position).getTodoTimeStamp()  ) ;
-        String dateString = StrUtil.timestampToDate( todoList.get(position).getTodoTimeStamp()  ) ;
+        String timeString = StrUtil.timestampToTime( todoList.get(position).getTimeStamp()  ) ;
+        String dateString = StrUtil.timestampToDate( todoList.get(position).getTimeStamp()  ) ;
 
         holder.timeTextView.setText( timeString  );
         holder.dateTextView.setText( dateString  );
 
         // icon
-        String iconString = todoList.get(position).getTodoSubject().substring(0,1);
+        String iconString = todoList.get(position).getSubject().substring(0,1);
         if ( iconString.isEmpty() ) iconString ="_";
         int color = getColor(iconString);
 

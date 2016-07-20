@@ -14,7 +14,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.zeiyu.simplememo.R;
-import com.zeiyu.simplememo.model.Todo;
+import com.zeiyu.simplememo.model.Memo;
 import com.zeiyu.simplememo.opensrc.CharacterCounterErrorWatcher;
 import com.zeiyu.simplememo.util.StrUtil;
 
@@ -30,7 +30,10 @@ public class EditActivity extends BaseActivity {
     @InjectView(R.id.input_subject) EditText _subjectText;
     @InjectView(R.id.input_memo) EditText _memoText;
     @InjectView(R.id.coordinator_edit) CoordinatorLayout _editCoordinator;
+
     private Snackbar snackbar;
+    private boolean isUpdate = false;
+    private String beforeSubject = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,18 +45,27 @@ public class EditActivity extends BaseActivity {
 
         Bundle extras = getIntent().getExtras();
         if ( extras != null ) {
-            int value = extras.getInt("id");
-            if ( value > 0 ) {
-                snackbar = Snackbar.make(_editCoordinator,"Memo Id : " + String.valueOf(value),
-                        Snackbar.LENGTH_LONG);
+            String subject = extras.getString( Memo._child_key);
+            String memo  = extras.getString("memo");
+            if ( ! subject.isEmpty() ) {
+//                snackbar = Snackbar.make(_editCoordinator,"Subject : "
+//                        + String.valueOf(subject), Snackbar.LENGTH_LONG);
 
-                loadMemo();
+                isUpdate = true;
 
+                Log.d(TAG,"isUpdate  :" + isUpdate );
+
+                beforeSubject=subject;
+                loadMemo(subject, memo);
             }
         }
     }
+    private void loadMemo(String subject,String memo) {
+        //DatabaseReference dbr = getTodoReferenceChild();
+        //Query qry = dbr.orderByChild(Memo._child_key).equalTo(subject);
+        _subjectText.setText(subject);
+        _memoText.setText(memo);
 
-    private void loadMemo() {
     }
 
     private void enableHome() {
@@ -95,7 +107,7 @@ public class EditActivity extends BaseActivity {
         //noinspection SimplifiableIfStatement
         switch ( id ) {
             case R.id.menu_save:
-                saveNewTodo();
+                saveNewMemo();
                 return true;
             case R.id.menu_delete:
                 return true;
@@ -104,27 +116,34 @@ public class EditActivity extends BaseActivity {
     }
 
     // save
-    private void saveNewTodo() {
+    private void saveNewMemo() {
 
         String subject = _subjectText.getText().toString();
-        String memo = _memoText.getText().toString();
+        String content = _memoText.getText().toString();
 
         if ( ! validateInput(subject) ) return ;
 
-        Todo todo = new Todo( );
+        Memo memo = new Memo( );
         if( subject.length() > 12 ) {
-            todo.setTodoSubject( subject.substring(0,12)+"..." );
+            memo.setSubject( subject.substring(0,12)+"..." );
 
         } else {
-            todo.setTodoSubject( subject );
+            memo.setSubject( subject );
         }
-        todo.setTodoMemo(memo);
-        todo.setTodoAlive(true);
-        String timeString = StrUtil.timestampToString( todo.getTodoTimeStamp()  ) ;
-        Log.d(TAG,"save time :" + timeString );
-        if ( todo.validation() ) {
+        memo.setContent(content);
+        memo.setAlive(true);
+        String timeString = StrUtil.timestampToString( memo.getTimeStamp()  ) ;
+        Log.d(TAG,"saveNewMemo save time :" + timeString );
+        if ( memo.validation() ) {
             //dbRef.push().setValue(todo);
-            saveTodo(todo);
+            if ( isUpdate ) {
+                Log.d(TAG,"updateMemo  :" + beforeSubject );
+                updateMemo(memo, beforeSubject);
+            }
+            else {
+                Log.d(TAG,"saveMemo  :" + subject );
+                saveMemo(memo);
+            }
         }
         //addTaskBox.setText(""); // clear
         NavUtils.navigateUpFromSameTask(this);

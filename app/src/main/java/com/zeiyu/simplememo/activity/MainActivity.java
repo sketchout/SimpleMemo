@@ -8,23 +8,18 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Toast;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 import com.zeiyu.simplememo.R;
-import com.zeiyu.simplememo.model.Todo;
+import com.zeiyu.simplememo.model.Memo;
 import com.zeiyu.simplememo.util.StrUtil;
 import com.zeiyu.simplememo.adapter.RecyclerViewAdapter;
 
@@ -33,20 +28,15 @@ import java.util.ArrayList;
 public class MainActivity extends BaseActivity {
 
     private static final String TAG= MainActivity.class.getSimpleName();
+    static final int MAX_CHAT_MESSAGES_TO_SHOW = 500;
+    private ArrayList<Memo> listMemo;
 
-    // add
-    private EditText _todoText;
-    private Button _addButton;
     // view
     private RecyclerView recyclerView;
-    private ArrayList<Todo> listTodo;
     private LinearLayoutManager linearLayoutManager;
     private RecyclerViewAdapter recyclerViewAdatper;
-    static final int MAX_CHAT_MESSAGES_TO_SHOW = 500;
+
     // firebase
-    private FirebaseAuth fAuth;
-    private FirebaseAuth.AuthStateListener fAuthListener;
-    private FirebaseUser fUser;
     private DatabaseReference dbRef;
 
 
@@ -65,10 +55,8 @@ public class MainActivity extends BaseActivity {
     //FirebaseUser checkFirebaseAuth
     private void checkFirebaseAuth() {
 
-        //fUser = FirebaseAuth.getInstance().getFireAuthUser();
-        fUser = getFireAuthUser();
-        if ( fUser != null ) {
-            Log.d(TAG, "onAuthStateChanged:uid() :" + fUser.getUid() );
+        if ( getFireAuthUser() != null ) {
+            Log.d(TAG, "onAuthStateChanged:uid() :" + this.getFireAuthUid() );
             setInitialize();
 
         } else {
@@ -79,14 +67,83 @@ public class MainActivity extends BaseActivity {
 
     // setInitialize
     private void setInitialize() {
+
+        showProgrssDialogMessage("Loading...");
+
         enableListAdapter();
-        enableAddButton();
-        enableAddToolbar();
-        enableAddFloating();
         // listener
         enableDbEventListener();
+
+        enableAddToolbar();
+        enableAddFloating();
+
+        //enableAddButton();
+
+//        new android.os.Handler().postDelayed(
+//                new Runnable() {
+//                    @Override
+//                    public void run() {
+//
+//                        if ( ! loadingDone ) {
+//                            //onLoginFailed("Server is busy or etc,.  Please try again later");
+//                            showAlert("Infomation",
+//                                    "Currently server or network is poor condition. Please try again later" );
+//
+//                        } else {
+//                            enableAddToolbar();
+//                            enableAddFloating();
+//
+//                            hideProgressDialog();
+//                        }
+//                    }
+//                } , 3000);
     }
 
+    // enable
+    private void enableDbEventListener() {
+
+        //dbRef = FirebaseDatabase.getInstance().getReference("todo");
+        //dbRef = getReferenceChild("todo");
+
+        dbRef = getTodoReferenceChild();
+        dbRef.limitToLast(MAX_CHAT_MESSAGES_TO_SHOW);
+
+        //dbRef.orderByChild("timeStampReverse"); // ????
+
+        dbRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.d(TAG,"Loading done." + dataSnapshot.getChildrenCount());
+                hideProgressDialog();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+
+        dbRef.addChildEventListener(new ChildEventListener() {
+
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                getListSingleItem(dataSnapshot);
+            }
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                getListSingleItem(dataSnapshot);
+            }
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                removeUpdateView(dataSnapshot);
+            }
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+    }
 
     // onCreate
     @Override
@@ -105,17 +162,11 @@ public class MainActivity extends BaseActivity {
         int id = item.getItemId();
         //noinspection SimplifiableIfStatement
         switch ( id ) {
-            case R.id.action_settings:
-                return true;
             case R.id.action_signout:
                 //loadEmptyActivity();
                 confirmSignOut();
                 return true;
         }
-//        if (id == R.id.action_settings) {
-//            loadEmptyActivity();
-//            return true;
-//        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -136,8 +187,6 @@ public class MainActivity extends BaseActivity {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
 
-                                // ToDo :
-                                // callback.onDeleteProcess(getAdapterPosition());
                                 signout();
                             }
                         });
@@ -184,7 +233,7 @@ public class MainActivity extends BaseActivity {
         this.startActivity(i);
     }
 
-    private void loadEditActivity() {
+    public void loadEditActivity() {
         Intent i = new Intent(this, EditActivity.class);
         //i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         // clears the activity stack --
@@ -194,33 +243,52 @@ public class MainActivity extends BaseActivity {
         this.startActivity(i);
     }
 
+    public void loadEditActivity(String subject,String memo) {
+        Intent i = new Intent(this, EditActivity.class);
+        //i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        // clears the activity stack --
+        // This prevents the user going back to the main activity
+        // when they press the Back button from the login view
+        //i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+
+        Bundle bundle = new Bundle();
+        bundle.putString( Memo._child_key, subject );
+        bundle.putString("memo", memo );
+        i.putExtras(bundle);
+
+        this.startActivity(i);
+    }
 
 
     // delete
     private void removeUpdateView(DataSnapshot dataSnapshot) {
 
         for(DataSnapshot item : dataSnapshot.getChildren() ) {
+
             String key = item.getKey();
+
             Log.d(TAG,"removeUpdateView getKey :" + key );
 
-            if ( key.equals("todoSubject") ) {
+
+            if ( key.equals( Memo._child_key) ) {
+
                 String title = item.getValue(String.class);
-                for( int i=0; i < listTodo.size(); i++ ) {
-                    if( listTodo.get(i).getTodoSubject().equals(title) ) {
+                for( int i=0; i < listMemo.size(); i++ ) {
+                    if( listMemo.get(i).getSubject().equals(title) ) {
                         Log.d(TAG,"removeUpdateView remove :" + i );
-                        listTodo.remove(i);
+                        listMemo.remove(i);
                     }
                 }
                 Log.d(TAG,"removeUpdateView subjectTextView :" + title );
             }
             recyclerViewAdatper.notifyDataSetChanged();
             //recyclerViewAdatper = new RecyclerViewAdapter(MainActivity.this, listTodo);
-            recyclerViewAdatper = new RecyclerViewAdapter( MainActivity.this,listTodo
+            recyclerViewAdatper = new RecyclerViewAdapter( MainActivity.this,listMemo
 //                    ,
 //                    new OnItemTodoClickListner() {
 //
 //                        @Override
-//                        public void onItemClick(Todo todo) {
+//                        public void onItemClick(Memo todo) {
 //                            Toast.makeText(getBaseContext(), "Item Clieck", Toast.LENGTH_LONG).show();
 //                        }
 //                    }
@@ -235,57 +303,55 @@ public class MainActivity extends BaseActivity {
     // save
     private void saveNewTodo(String enteredTitle) {
 
-        Todo todo = new Todo( );
+        Memo memo = new Memo( );
 
         if( enteredTitle.length() > 12 ) {
-            todo.setTodoSubject( enteredTitle.substring(0,12)+"..." );
+            memo.setSubject( enteredTitle.substring(0,12)+"..." );
         } else {
-            todo.setTodoSubject( enteredTitle );
+            memo.setSubject( enteredTitle );
         }
-        todo.setTodoMemo(enteredTitle);
-        todo.setTodoAlive(true);
-        String timeString = StrUtil.timestampToString( todo.getTodoTimeStamp()  ) ;
+        memo.setContent(enteredTitle);
+        memo.setAlive(true);
+        String timeString = StrUtil.timestampToString( memo.getTimeStamp()  ) ;
         Log.d(TAG,"save time :" + timeString );
-        if ( todo.validation() ) {
+        if ( memo.validation() ) {
             //dbRef.push().setValue(todo);
-            saveTodo(todo);
+            saveMemo(memo);
         }
         //dbRef.push().child("todo").setValue(taskObject);
         //dbRef.child("todo").child(userid).setValue(taskObject);
         //dbRef.child("todo").setValue(taskObject);
-        _todoText.setText(""); // clear
+        //_todoText.setText(""); // clear
     }
     // get
-    private void getListTodo(DataSnapshot dataSnapshot) {
+    private void getListSingleItem(DataSnapshot dataSnapshot) {
 
         Long tsLong = null;
         String sSubject = null;
-        String sMemo = null;
+        String sContent = null;
 
         for(DataSnapshot item : dataSnapshot.getChildren() ) {
 
             String key = item.getKey();
-            Log.d(TAG,"getKey :" + key );
+            Log.d(TAG,"getListSingleItem getKey :" + key );
 
-            //Todo todo = item.getValue(Todo.class);
-            //Todo todo = item.child(key).getValue(Todo.class);
-            if ( key.equals("todoTimeStamp") ) tsLong = item.getValue(Long.class);
-            if ( key.equals("todoSubject") ) sSubject = item.getValue(String.class);
-            if ( key.equals("todoMemo") ) sMemo = item.getValue(String.class);
+            if ( key.equals("timeStamp") ) tsLong = item.getValue(Long.class);
+            if ( key.equals( Memo._child_key) ) sSubject = item.getValue(String.class);
+            if ( key.equals("content") ) sContent = item.getValue(String.class);
         }
-        Log.d(TAG,"getListTodo / sTitle :" + sSubject + ", tsLong :" + tsLong);
+        Log.d(TAG,"getListSingleItem / subject :" + sSubject + ", tsLong :" + tsLong);
 
-        Todo todo = new Todo(sSubject, tsLong);
-        todo.setTodoMemo( sMemo );
+        Memo todo = new Memo(sSubject, tsLong);
+        todo.setContent( sContent );
 
-        listTodo.add( todo );
+        listMemo.add( todo );
 
-        recyclerViewAdatper = new RecyclerViewAdapter( MainActivity.this,listTodo
+        recyclerViewAdatper = new RecyclerViewAdapter( MainActivity.this,listMemo
 //                ,
 //                new OnItemTodoClickListner() {
 //
 //                    @Override
-//                    public void onItemClick(Todo todo) {
+//                    public void onItemClick(Memo todo) {
 //                        Toast.makeText(getBaseContext(), "Item Clieck", Toast.LENGTH_LONG).show();
 //                    }
 //                }
@@ -297,45 +363,14 @@ public class MainActivity extends BaseActivity {
 
     // enable
     private void enableListAdapter() {
-        listTodo = new ArrayList<Todo>();
+        listMemo = new ArrayList<Memo>();
         recyclerView = (RecyclerView)findViewById(R.id.list_view);
         linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
 
 
     }
-    // enable
-    private void enableDbEventListener() {
 
-        //dbRef = FirebaseDatabase.getInstance().getReference("todo");
-        //dbRef = getReferenceChild("todo");
-
-        dbRef = getTodoReferenceChild();
-        dbRef.limitToLast(MAX_CHAT_MESSAGES_TO_SHOW);
-        dbRef.orderByChild("timeStampReverse"); // ????
-
-        dbRef.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                getListTodo(dataSnapshot);
-            }
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                getListTodo(dataSnapshot);
-            }
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-                removeUpdateView(dataSnapshot);
-            }
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-            }
-        });
-    }
     // enable
     private void enableAddFloating() {
         // floataction
@@ -360,7 +395,7 @@ public class MainActivity extends BaseActivity {
     }
 
     // enable
-    private void enableAddButton() {
+//    private void enableAddButton() {
 //        _todoText = (EditText)findViewById(R.id.input_todo_in_list);
 //
 //        _addButton =(Button)findViewById(R.id.btn_add_in_list);
@@ -385,6 +420,6 @@ public class MainActivity extends BaseActivity {
 //            saveNewTodo(enteredTitle);
 //            }
 //        });
-    }
+//    }
 
 }

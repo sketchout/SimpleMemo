@@ -35,13 +35,14 @@ public class SignupActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
-        fireAuth = FirebaseAuth.getInstance();
 
         setInitialize();
-
     }
 
     private void setInitialize() {
+
+        fireAuth = FirebaseAuth.getInstance();
+
         ButterKnife.inject(this);
         _signupButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -49,7 +50,6 @@ public class SignupActivity extends BaseActivity {
                 signup();
             }
         });
-
         String strText = getString(R.string.link_text_signin1)
                 + " <font color=blue>" + getString(R.string.link_text_signin2) +"</font>";
         _loginLink.setText( Html.fromHtml(strText) );
@@ -60,7 +60,6 @@ public class SignupActivity extends BaseActivity {
                 finish();
             }
         });
-
     }
 
     private void signup() {

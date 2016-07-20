@@ -30,17 +30,10 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
 
-    compile 'com.android.support:appcompat-v7:24.0.0'
-    compile 'com.android.support:design:24.0.0'
-    compile 'com.jakewharton:butterknife:6.1.0'
-    compile 'com.firebase:firebase-client-android:2.5.2'
     // Analytics
     //compile 'com.google.firebase:firebase-core:9.0.2'
     // Authentication
-    compile 'com.google.firebase:firebase-auth:9.2.0'
     // Realtime Database
-    compile 'com.google.firebase:firebase-database:9.2.0'
-    compile 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
     //compile 'com.google.firebase:firebase-storage:9.2.0'
     // Storage
     ///compile 'com.google.firebase:firebase-crash:9.2.0'
@@ -55,6 +48,14 @@ dependencies {
     // AdMob
     //compile 'com.google.android.gms:play-services-appindexing:9.2.0'
     //App Indexing
+    compile 'com.android.support:recyclerview-v7:23.2.1'
+    compile 'com.android.support:appcompat-v7:24.0.0'
+    compile 'com.android.support:design:24.0.0'
+    compile 'com.jakewharton:butterknife:6.1.0'
+    compile 'com.firebase:firebase-client-android:2.5.2'
+    compile 'com.google.firebase:firebase-auth:9.2.0'
+    compile 'com.google.firebase:firebase-database:9.2.0'
+    compile 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
 }
 
 // Add to the bottom of the file

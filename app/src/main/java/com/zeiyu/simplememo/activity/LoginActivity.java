@@ -37,14 +37,13 @@ public class LoginActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-
-        fireAuth = FirebaseAuth.getInstance();
         setInitialize();
     }
 
     private void setInitialize() {
 
         ButterKnife.inject(this);
+        fireAuth = FirebaseAuth.getInstance();
 
         _loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -132,8 +131,8 @@ public class LoginActivity extends BaseActivity {
                     @Override
                     public void run() {
 
+                        hideProgressDialog();
                         if ( ! _loginButton.isEnabled() ) {
-                            hideProgressDialog();
                             //onLoginFailed("Server is busy or etc,.  Please try again later");
                             showAlert("Infomation",
                                     "Currently server or network is poor condition. Please try again later" );

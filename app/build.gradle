@@ -9,6 +9,8 @@ android {
         targetSdkVersion 24
         versionCode 1
         versionName "1.0"
+        // Enabling multidex support.
+        multiDexEnabled true
     }
     buildTypes {
         release {
@@ -20,6 +22,7 @@ android {
         exclude 'META-INF/LICENSE'
         exclude 'META-INF/LICENSE-FIREBASE.txt'
         exclude 'META-INF/NOTICE'
+        exclude 'META-INF/services/javax.annotation.processing.Processor' // butterknife
     }
     productFlavors {
     }
@@ -48,7 +51,8 @@ dependencies {
     // AdMob
     //compile 'com.google.android.gms:play-services-appindexing:9.2.0'
     //App Indexing
-    compile 'com.android.support:recyclerview-v7:23.2.1'
+    //compile 'com.android.support:recyclerview-v7:23.2.1'
+    compile 'com.android.support:multidex:1.0.0'
     compile 'com.android.support:appcompat-v7:24.0.0'
     compile 'com.android.support:design:24.0.0'
     compile 'com.jakewharton:butterknife:6.1.0'
@@ -56,6 +60,7 @@ dependencies {
     compile 'com.google.firebase:firebase-auth:9.2.0'
     compile 'com.google.firebase:firebase-database:9.2.0'
     compile 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
+    compile 'com.google.appengine:appengine-api-1.0-sdk:1.9.40'
 }
 
 // Add to the bottom of the file

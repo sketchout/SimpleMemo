@@ -62,7 +62,7 @@ public class RecyclerViewAdapter
         // find
         //DatabaseReference dbr = FirebaseDatabase.getInstance().getReference("todo");
 
-        DatabaseReference dbr = ((MainActivity)context).getTodoReferenceChild();
+        DatabaseReference dbr = ((MainActivity)context).getMemoRef();
 
         Query qry = dbr.orderByChild( Memo._child_key).equalTo(subject);
         //Query qry = ((MainActivity)context).getQueryEqualTo(title);

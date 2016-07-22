@@ -57,7 +57,10 @@ public class MainActivity extends BaseActivity {
 
         if ( getFireAuthUser() != null ) {
             Log.d(TAG, "onAuthStateChanged:uid() :" + this.getFireAuthUid() );
+            requestLogger();
+
             setInitialize();
+
 
         } else {
             Log.d(TAG, "onAuthStateChanged:signed_out");
@@ -105,7 +108,7 @@ public class MainActivity extends BaseActivity {
         //dbRef = FirebaseDatabase.getInstance().getReference("todo");
         //dbRef = getReferenceChild("todo");
 
-        dbRef = getTodoReferenceChild();
+        dbRef = getMemoRef();
         dbRef.limitToLast(MAX_CHAT_MESSAGES_TO_SHOW);
 
         //dbRef.orderByChild("timeStampReverse"); // ????

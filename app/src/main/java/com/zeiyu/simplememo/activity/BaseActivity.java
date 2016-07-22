@@ -23,10 +23,11 @@ public class BaseActivity extends AppCompatActivity {
 
     private static final String TAG= BaseActivity.class.getSimpleName();
 
-    private ProgressDialog mProgressDialog;
 
     // dialog progress
-    public void showProgressDialog() {
+    private ProgressDialog mProgressDialog;
+
+    protected void showProgressDialog() {
         if (mProgressDialog == null) {
             mProgressDialog = new ProgressDialog(this, R.style.AppTheme_Dark_Dialog);
             //mProgressDialog.setCancelable(false);
@@ -36,7 +37,7 @@ public class BaseActivity extends AppCompatActivity {
         mProgressDialog.show();
     }
 
-    public void showProgrssDialogMessage(String message) {
+    protected void showProgrssDialogMessage(String message) {
 
         if (mProgressDialog == null) {
             mProgressDialog = new ProgressDialog(this);
@@ -46,33 +47,45 @@ public class BaseActivity extends AppCompatActivity {
         mProgressDialog.show();
     }
 
-    public void hideProgressDialog() {
+    protected void hideProgressDialog() {
         if (mProgressDialog != null && mProgressDialog.isShowing()) {
             mProgressDialog.dismiss();
         }
     }
 
+    // Firebase keys commonly used with backend Servlet instances
+    private static final String INBOX ="inbox";
+    private static final String REQLOG ="requestLogger";
+
+    protected void requestLogger() {
+        String uidHash = "client-"
+                + Integer.toString( Math.abs( getFireAuthUid().hashCode() ) );
+        getFireDbRef().child(REQLOG).push().setValue(uidHash);
+        Log.d(TAG,"requestLogger : " + uidHash );
+    }
+
     // firebase auth
-    public String getFireAuthUid() {
+    protected String getFireAuthUid() {
         return FirebaseAuth.getInstance().getCurrentUser().getUid();
     }
-    public FirebaseUser getFireAuthUser() {
+    protected FirebaseUser getFireAuthUser() {
         return FirebaseAuth.getInstance().getCurrentUser();
     }
-    public void setFireAuthSignout() {
+    protected void setFireAuthSignout() {
         FirebaseAuth.getInstance().signOut();
     }
 
     // firebase database
-    public DatabaseReference getFireDbRef() {
+    protected DatabaseReference getFireDbRef() {
         return FirebaseDatabase.getInstance().getReference();
     }
 
-    public DatabaseReference getFireDbChild(String sChild) {
+    protected DatabaseReference getFireDbChild(String sChild) {
         return FirebaseDatabase.getInstance().getReference(sChild);
     }
 
-    public DatabaseReference getTodoReferenceChild() {
+    // public
+    public DatabaseReference getMemoRef() {
         return FirebaseDatabase.getInstance().getReference(getTodoPath());
     }
 
@@ -81,16 +94,16 @@ public class BaseActivity extends AppCompatActivity {
 //        getFireDbRef().child(sChild).child(sKey).setValue(sValue);
 //    }
 
-    public String getTodoPath() {
+    protected String getTodoPath() {
         return  "/"+ Memo._parent_key +"/" + getFireAuthUid() + "/";
     }
 
-    public void saveMemo(Memo memo) {
+    protected void saveMemo(Memo memo) {
 
         getFireDbChild( getTodoPath() ).push().setValue(memo);
     }
 
-    public void updateMemo(Memo memo, String beforeSubject) {
+    protected void updateMemo(Memo memo, String beforeSubject) {
 
         final Memo m = memo;
         Query pendingTaks = getFireDbChild( getTodoPath() )
@@ -136,7 +149,7 @@ public class BaseActivity extends AppCompatActivity {
 //    }
 
     // alert
-    public void showAlert(String title,String message) {
+    protected void showAlert(String title,String message) {
         // Authenticated failed with error firebaseError
         AlertDialog.Builder builder =
                 new AlertDialog.Builder(this);

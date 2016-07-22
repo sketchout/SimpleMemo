@@ -61,7 +61,7 @@ public class EditActivity extends BaseActivity {
         }
     }
     private void loadMemo(String subject,String memo) {
-        //DatabaseReference dbr = getTodoReferenceChild();
+        //DatabaseReference dbr = getMemoRef();
         //Query qry = dbr.orderByChild(Memo._child_key).equalTo(subject);
         _subjectText.setText(subject);
         _memoText.setText(memo);

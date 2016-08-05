@@ -20,6 +20,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 import com.zeiyu.simplememo.R;
 import com.zeiyu.simplememo.model.Memo;
+import com.zeiyu.simplememo.util.NetUtil;
 import com.zeiyu.simplememo.util.StrUtil;
 import com.zeiyu.simplememo.adapter.RecyclerViewAdapter;
 
@@ -48,8 +49,13 @@ public class MainActivity extends BaseActivity {
         setContentView(R.layout.activity_main);
         // http://yookn.tistory.com/244
 
-        checkFirebaseAuth();
-        //setInitialize();
+        if ( !NetUtil.verifyConnection(this) ) {
+            showAlert("Information", "Please Check Internet!" );
+            finish();
+        } else {
+            checkFirebaseAuth();
+            //setInitialize();
+        }
     }
 
     //FirebaseUser checkFirebaseAuth

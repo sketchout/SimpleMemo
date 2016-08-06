@@ -124,6 +124,7 @@ public class MainActivity extends BaseActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Log.d(TAG,"Loading done." + dataSnapshot.getChildrenCount());
                 hideProgressDialog();
+
             }
 
             @Override
